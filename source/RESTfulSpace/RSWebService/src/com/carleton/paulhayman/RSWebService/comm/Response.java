@@ -7,7 +7,6 @@ public class Response {
 	public String url;
 	public String serializedTuple;
 	public String className;
-	//tests
 	
 	public Response(int transId, String returnUrl){
 		this.transId = transId;

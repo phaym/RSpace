@@ -15,9 +15,13 @@
 	<param-name>com.sun.jersey.api.json.POJOMappingFeature</param-name>
     <param-value>true</param-value>
   </init-param>
+   <load-on-startup>1</load-on-startup>
  </servlet>
  <servlet-mapping>
   <servlet-name>RSServlet</servlet-name>
   <url-pattern>/RSpace/*</url-pattern>
  </servlet-mapping>
+ <listener>
+	   <listener-class>com.carleton.paulhayman.RSWebService.services.InitializeListener</listener-class>
+   </listener>
 </web-app>
