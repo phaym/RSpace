@@ -7,13 +7,15 @@ import com.carleton.paulhayman.RSWebService.comm.SpaceEntry;
 public abstract class Transaction {
 	
 	protected final int transId;
+	protected String clientID;
 	protected SpaceEntry tupleEntry;
 	protected Response tupleResponse;
 
 	public Transaction(SpaceEntry tupleEntry, int transId) {
 		this.tupleEntry = tupleEntry;
 		this.transId = transId;
-		this.tupleResponse = new Response(this.transId, this.tupleEntry.clientID);
+		this.clientID = this.tupleEntry.clientID;
+		this.tupleResponse = new Response(this.transId);
 	}
 	
 	public SpaceEntry getTupleEntry() {
@@ -43,5 +45,8 @@ public abstract class Transaction {
 		return tupleResponse;
 	}
 	
+	public String getClientID() {
+		return clientID;
+	}
 
 }

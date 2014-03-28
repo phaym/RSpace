@@ -21,21 +21,12 @@ public class TransactionWorker implements Runnable {
 	public void run() {
 		
 		Transaction spaceTransaction;
-		boolean noFurtherAction;
 		
 		while (running){
 			try {
 				spaceTransaction = queue.take();
 				if(spaceTransaction != null){		
-					//if there is further action, it will be added to listener queue
-					noFurtherAction = spaceTransaction.perform();
-					
-					if(noFurtherAction || spaceTransaction.isExpired()){
-						addToResponseQueue(spaceTransaction);
-					}
-					else{
-						addToListenerQueue(spaceTransaction);
-					}
+					processTransaction(spaceTransaction);
 				}
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
@@ -43,18 +34,37 @@ public class TransactionWorker implements Runnable {
 			}
 		}
 	}
+	
+	/*create anonymous thread to process transaction*/
+	protected void processTransaction(final Transaction newTransaction){
+		Thread t = new Thread() {
+		    public void run() {
+				boolean noFurtherAction;
+				//if there is further action, it will be added to listener queue
+				noFurtherAction = newTransaction.perform();
+				
+				if(noFurtherAction || newTransaction.isExpired()){
+					addToResponseQueue(newTransaction);
+				}
+				else{
+					addToListenerQueue(newTransaction);
+				}
+		    }
+		};
+		t.start();
+	}
 
 	//add to response queue
-	public void addToResponseQueue(Transaction t){
+	protected void addToResponseQueue(Transaction t){
 		
 		if(!(t instanceof WriteTransaction)){ //do nothing if a writetransaction enters this block
 			ResponseQueue responseQueue = ResponseQueue.getInstance();
-			responseQueue.addResponse(t.getResponse());
+			responseQueue.addResponse(t);
 		}
 	}
 	
 	//add to queue to wait for possible later response
-	public void addToListenerQueue(Transaction t){
+	protected void addToListenerQueue(Transaction t){
 	
 		ListenerQueue futureQueue = ListenerQueue.getInstance();
 		futureQueue.addTransaction(t);

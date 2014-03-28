@@ -4,13 +4,11 @@ package com.carleton.paulhayman.RSWebService.comm;
 public class Response {
 	
 	public int transId;
-	public String clientID;
 	public String serializedTuple;
 	public String className;
 	
-	public Response(int transId, String clientID){
+	public Response(int transId){
 		this.transId = transId;
-		this.clientID = clientID;
 	}
 
 	public void setResult(String serializedTuple, String tupleClassName) {

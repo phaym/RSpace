@@ -10,14 +10,15 @@ import org.restlet.resource.ResourceException;
 
 import com.carleton.paulhayman.RSWebService.comm.Response;
 import com.carleton.paulhayman.RSWebService.dao.MongoDbImpl;
+import com.carleton.paulhayman.RSWebService.models.Transaction;
 
 public class ResponseWorker implements Runnable {
 
-	LinkedBlockingQueue<Response> queue;
+	LinkedBlockingQueue<Transaction> queue;
 	boolean running;
 	
 	/*waits for tuple matches to be added to its queue to be sent back to client*/
-	public ResponseWorker(LinkedBlockingQueue<Response> queue){
+	public ResponseWorker(LinkedBlockingQueue<Transaction> queue){
 		this.queue = queue;
 		this.running = true;
 	}
@@ -25,12 +26,12 @@ public class ResponseWorker implements Runnable {
 	@Override
 	public void run() {
 		
-		Response spaceResponse;
+		Transaction transactionWithResponse;
 		while (running){
 			try {
-				spaceResponse = queue.take();
-				if(spaceResponse != null){
-					sendResponse(spaceResponse);
+				transactionWithResponse = queue.take();
+				if(transactionWithResponse != null){
+					processResponse(transactionWithResponse);
 				}
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
@@ -38,10 +39,22 @@ public class ResponseWorker implements Runnable {
 			}
 		}
 	}
+	
+	/*create anonymous thread to process response*/
+	private void processResponse(final Transaction transWithResponse){
+		Thread t = new Thread() {
+		    public void run() {
+		    	sendResponse(transWithResponse);
+		    }
+		};
+		t.start();
+	}
 
 	/*send response to client contained matched tuple, or null if none found*/
-	private void sendResponse(Response spaceResponse) {
-		String url = MongoDbImpl.getInstance().getClientURL(spaceResponse.clientID);
+	private void sendResponse(Transaction transWithResponse) {
+		
+		Response spaceResponse = transWithResponse.getResponse();
+		String url = MongoDbImpl.getInstance().getClientURL(transWithResponse.getClientID());
 		if(url != null){
 			ClientResource cr = new ClientResource(url);
 			try {

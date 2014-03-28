@@ -59,7 +59,7 @@ public class ListenerWorker implements Runnable {
 			System.out.println(" phase: " + this.phaserLock.getPhase() + " , parties : " + this.phaserLock.getArrivedParties());
 		}
 		ResponseQueue responseQueue = ResponseQueue.getInstance();
-		responseQueue.addResponse(this.transaction.getResponse());	
+		responseQueue.addResponse(this.transaction);	
 	}
 
 }

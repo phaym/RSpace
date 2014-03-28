@@ -5,12 +5,12 @@ import java.util.concurrent.LinkedBlockingQueue;
 import org.restlet.engine.Engine;
 import org.restlet.ext.jackson.JacksonConverter;
 
-import com.carleton.paulhayman.RSWebService.comm.Response;
+import com.carleton.paulhayman.RSWebService.models.Transaction;
 import com.carleton.paulhayman.RSWebService.services.ResponseWorker;
 
 public class ResponseQueue {
 	
-	private LinkedBlockingQueue<Response> responseQueue;
+	private LinkedBlockingQueue<Transaction> responseQueue;
 	
 	private static ResponseQueue instance;
 	private ResponseWorker worker;
@@ -21,7 +21,7 @@ public class ResponseQueue {
 		Engine.getInstance().getRegisteredConverters().add(new JacksonConverter());
 		
 		//intialize queue to place new transactions for space
-		responseQueue = new LinkedBlockingQueue<Response>();
+		responseQueue = new LinkedBlockingQueue<Transaction>();
 		worker = new ResponseWorker(responseQueue);
 		
 		//initialize worker to pick responses off the queue
@@ -29,12 +29,12 @@ public class ResponseQueue {
 		workerThread.start();
 	}
 	
-	public LinkedBlockingQueue<Response> getResponseQueue(){
+	public LinkedBlockingQueue<Transaction> getResponseQueue(){
 		return responseQueue;
 	}
 	
-	public void addResponse(Response r){
-		responseQueue.add(r);
+	public void addResponse(Transaction t){
+		responseQueue.add(t);
 	}
 	
 	public static ResponseQueue getInstance(){

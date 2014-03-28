@@ -8,7 +8,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.carleton.paulhayman.RSWebService.comm.Client;
-import com.carleton.paulhayman.RSWebService.comm.SpaceEntry;
 import com.carleton.paulhayman.RSWebService.dao.MongoDbImpl;
 
 @Path("registerClient")
