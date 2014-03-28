@@ -165,12 +165,11 @@ public class RSpace {
 	
 	private Object handleResult(Response tupleResult) {
 		Object result = null;
-		if(tupleResult.serializedTuple != null){
+		if(tupleResult != null && tupleResult.serializedTuple != null){
 			try {
 				result = new Gson().fromJson(tupleResult.serializedTuple, Class.forName(tupleResult.className));
 			} catch (JsonSyntaxException | ClassNotFoundException e ) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+					e.printStackTrace();
 			}
 		}
 		return result;
