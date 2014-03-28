@@ -7,7 +7,7 @@ public class SpaceEntry {
 
 	public TupleObject tuple;
 	public long expiryDate;
-	public String returnUrl;
+	public String clientID;
 	
 	public SpaceEntry(){
 		

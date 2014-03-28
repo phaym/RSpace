@@ -24,7 +24,8 @@ public class TupleObject {
 		this.name = tupleObject.getClass().getCanonicalName();
 		
 		//set superclass, so matches can be found if it is a subclass of template
-		this.superClass = tupleObject.getClass().getSuperclass().getCanonicalName();
+		if(tupleObject.getClass().getSuperclass() != null)
+			this.superClass = tupleObject.getClass().getSuperclass().getCanonicalName();
 	
 		this.fields = new HashMap<String, Object>();
 		convertObjToMap(tupleObject);

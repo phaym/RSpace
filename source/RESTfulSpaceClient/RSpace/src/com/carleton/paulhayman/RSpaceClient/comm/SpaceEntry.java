@@ -5,11 +5,11 @@ public class SpaceEntry {
 
 	public TupleObject tuple;
 	public long expiryDate;
-	public String returnUrl;
+	public String clientID;
 	
-	public SpaceEntry(Object tupleObject, long expiryDate, String returnUrl) throws IllegalArgumentException, IllegalAccessException{
+	public SpaceEntry(Object tupleObject, long expiryDate, String clientID) throws IllegalArgumentException, IllegalAccessException{
 		this.expiryDate = expiryDate;	
-		this.returnUrl = returnUrl;
+		this.clientID = clientID;
 		this.tuple = new TupleObject(tupleObject);
 	}
 	

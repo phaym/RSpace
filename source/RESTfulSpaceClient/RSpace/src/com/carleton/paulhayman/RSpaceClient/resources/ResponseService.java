@@ -1,7 +1,5 @@
 package com.carleton.paulhayman.RSpaceClient.resources;
 
-import java.util.logging.Logger;
-
 import org.restlet.Component;
 import org.restlet.data.Protocol;
 import org.restlet.routing.VirtualHost;
@@ -11,7 +9,7 @@ import com.carleton.paulhayman.RSpaceClient.controller.RSpace;
 public class ResponseService {
 	
 	Component component;
-	static Logger restletLogger;
+
 	
 	public ResponseService(int port) {
 		component = new Component();
@@ -21,7 +19,6 @@ public class ResponseService {
 		component.getDefaultHost().attach(RSpace.RETURN_ROUTER, 
 				new ResponseRouter());
 		
-		restletLogger = component.getLogger();
 	}
 	
 	public void init() throws Exception{
@@ -32,9 +29,6 @@ public class ResponseService {
 		component.stop();
 	}
 	
-	public static Logger getLogger(){
-		return restletLogger;
-	}
 	
 	public String returnClientURL(){
 		return VirtualHost.getLocalHostAddress();

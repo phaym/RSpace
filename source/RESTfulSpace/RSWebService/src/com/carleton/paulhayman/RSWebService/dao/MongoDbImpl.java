@@ -6,6 +6,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map.Entry;
 
+import org.bson.types.ObjectId;
+
+import com.carleton.paulhayman.RSWebService.comm.Client;
 import com.carleton.paulhayman.RSWebService.comm.SpaceEntry;
 import com.carleton.paulhayman.RSWebService.models.Transaction;
 import com.google.gson.JsonElement;
@@ -25,11 +28,15 @@ public class MongoDbImpl {
 	private static MongoDbImpl instance;
 	
 	private final String TUPLE_DB = "TupleSpace";
+	
 	private final String ENTRY_COLLECTION = "TupleEntries";
 	private final String CLASS_FIELD = "className";
 	private final String SUPER_CLASS_FIELD = "superClassName";
 	private final String TTL_FIELD = "expireAt";
 	private final String TUPLE_FIELD = "tupleEntry";
+	
+	private final String CLIENT_COLLECTION = "Clients";
+	private final String CLIENT_URL_FIELD = "clientURL";
 	
 	private MongoClient mongoClient;
 	private DB db;
@@ -124,10 +131,50 @@ public class MongoDbImpl {
 		return query;
 	}
 	
+	public String addClient(Client clientInfo) {
+		
+		DBCollection coll = db.getCollection(CLIENT_COLLECTION);
+		coll.ensureIndex(new BasicDBObject(TTL_FIELD, 1), 
+							new BasicDBObject("expireAfterSeconds", 0));
+		
+		//remove any clients registered at this url
+		DBObject oldEntry = new BasicDBObject(CLIENT_URL_FIELD, clientInfo.url);
+		coll.remove(oldEntry);
+		
+		//create entry URL and TTL
+		DBObject newEntry = new BasicDBObject();
+		newEntry.put(CLIENT_URL_FIELD, clientInfo.url);
+		newEntry.put(TTL_FIELD, new Date(clientInfo.timeout));
+
+		//insert into DB
+		coll.insert(newEntry);
+		//get id
+		String clientID = coll.findOne(newEntry).get("_id").toString();
+		return clientID;
+	}
+	
+	public String getClientURL(String clientID) {
+		
+		String urlResult = null;
+		DBCollection coll = db.getCollection(CLIENT_COLLECTION);
+		
+		DBObject query = new BasicDBObject("_id", new ObjectId(clientID));
+		DBObject queryResult = coll.findOne(query);
+	
+		if(queryResult != null) {
+			urlResult = (String) queryResult.get(CLIENT_URL_FIELD);
+		}
+		
+		return urlResult;
+	}
 	
 	public static MongoDbImpl getInstance(){
 		if(instance == null)
 			instance = new MongoDbImpl();
 		return instance;
 	}
+
+	
+
+	
 }

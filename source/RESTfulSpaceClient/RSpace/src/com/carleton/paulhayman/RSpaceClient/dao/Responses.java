@@ -2,10 +2,10 @@ package com.carleton.paulhayman.RSpaceClient.dao;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.carleton.paulhayman.RSpaceClient.comm.Response;
 import com.carleton.paulhayman.RSpaceClient.models.ResponsiveTransaction;
-import com.carleton.paulhayman.RSpaceClient.resources.ResponseService;
 
 public class Responses {
 
@@ -36,7 +36,7 @@ public class Responses {
 			awaitingResults.remove(response.transId);
 		}		
 		else{
-			ResponseService.getLogger().log(Level.WARNING, "Received response at current port for unknown transaction, previous client using this port may have terminated before response received.");
+			Logger.getLogger("RSpace").log(Level.WARNING, "Received response at current port for unknown transaction, previous client using this port may have terminated before response received.");
 		}
 		
 	}

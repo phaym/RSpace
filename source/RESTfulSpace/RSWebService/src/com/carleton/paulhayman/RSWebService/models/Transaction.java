@@ -13,7 +13,7 @@ public abstract class Transaction {
 	public Transaction(SpaceEntry tupleEntry, int transId) {
 		this.tupleEntry = tupleEntry;
 		this.transId = transId;
-		this.tupleResponse = new Response(this.transId, this.tupleEntry.returnUrl);
+		this.tupleResponse = new Response(this.transId, this.tupleEntry.clientID);
 	}
 	
 	public SpaceEntry getTupleEntry() {

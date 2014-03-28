@@ -1,6 +1,5 @@
 package com.carleton.paulhayman.RSpaceClient.controller;
 
-import java.io.Serializable;
 import java.net.URI;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -11,6 +10,8 @@ import java.util.concurrent.Future;
 import javax.ws.rs.core.UriBuilder;
 
 import com.carleton.paulhayman.RSpaceClient.comm.Response;
+import com.carleton.paulhayman.RSpaceClient.dao.Responses;
+import com.carleton.paulhayman.RSpaceClient.models.ClientTransaction;
 import com.carleton.paulhayman.RSpaceClient.models.InstantTransaction;
 import com.carleton.paulhayman.RSpaceClient.models.ResponsiveTransaction;
 import com.carleton.paulhayman.RSpaceClient.resources.ResponseService;
@@ -33,6 +34,7 @@ public class RSpace {
 	private static String WRITE = "write";
 	private static String READIFEXISTS = "readIfExists";
 	private static String TAKEIFEXISTS = "takeIfExists";
+	private static String REGISTER_CLIENT = "registerClient";
 	
 	/*client endpoint config*/
 	ResponseService responseService;
@@ -44,13 +46,15 @@ public class RSpace {
 	
 	private static RSpace instance;
 	private ExecutorService responsePool;
+	public static String CLIENT_ID = "";
 	
 	private RSpace(int port) throws Exception {
 		
 		initializeRestSpace();
 		initializeResponseService(port);
+		generateClientID();
 	}
-	
+
 	/*Initialize WebResource to make calls to server WebService*/
 	private void initializeRestSpace() {
 		
@@ -68,6 +72,7 @@ public class RSpace {
 			
 			setReturnURL(port);	//build URL to send to server for response to client
 			responsePool = Executors.newCachedThreadPool(); //create pool to launch threads waiting for response
+			Responses.getInstance(); //initialize response queue
 	}
 	
 	public void terminate(){
@@ -115,21 +120,31 @@ public class RSpace {
 		return handleResult(tupleResult);
 	}
 	
-	/*write object to space, returns timeout length*/
-	public long write(Object tuple, long timeout){
+	private void generateClientID() {
+		String result = createClientTransaction(RETURN_URL ,REST, REGISTER_CLIENT);
+		this.CLIENT_ID = result;
+	}
+	
+	private String createClientTransaction(String returnURL, String restPath, String actionEndpoint) {
 		
-		long result = createInstantTransaction(tuple, timeout, REST, WRITE);
-		return result;
+		ClientTransaction transaction = new ClientTransaction(returnURL, restSpace.path(restPath), actionEndpoint);
+		return  transaction.registerClient();
+	}
+
+	/*write object to space, return timeout*/
+	public Object write(Object tuple, long timeout){
+		
+	    createInstantTransaction(tuple, timeout, REST, WRITE);
+		return timeout;
 	}
 	
 	/*create a transaction that does not wait for a later response from the server */
-	private long createInstantTransaction(Object tuple, long timeout, String restPath, String actionEndpoint) {
+	private Object createInstantTransaction(Object tuple, long timeout, String restPath, String actionEndpoint) {
 
 		InstantTransaction transaction = new InstantTransaction(tuple, timeout, restSpace.path(restPath), actionEndpoint);
-		transaction.call();
-		return timeout;
+		return transaction.call();
 	}
-
+	
 	/*create a transaction that will get a transaction ID from the server and wait for
 	 the server to send a matching tuple response to the RESTful client endpoint for that transaction */
 	private Response createResponsiveTransaction(Object tuple, long timeout, String restPath, String actionEndpoint){

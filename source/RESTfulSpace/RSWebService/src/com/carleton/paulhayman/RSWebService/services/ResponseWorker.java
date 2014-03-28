@@ -9,6 +9,7 @@ import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
 
 import com.carleton.paulhayman.RSWebService.comm.Response;
+import com.carleton.paulhayman.RSWebService.dao.MongoDbImpl;
 
 public class ResponseWorker implements Runnable {
 
@@ -40,15 +41,17 @@ public class ResponseWorker implements Runnable {
 
 	/*send response to client contained matched tuple, or null if none found*/
 	private void sendResponse(Response spaceResponse) {
-		
-		ClientResource cr = new ClientResource(spaceResponse.url);
-		try {
-			cr.post(spaceResponse, MediaType.APPLICATION_JSON); //attempt to post response to client endpoint
-		}catch( ResourceException e){ //handle error if client endpoint not available
-			
-			Logger.getLogger("RSpace").log(Level.WARNING, "Connection not available with client endpoint, response not sent.");
+		String url = MongoDbImpl.getInstance().getClientURL(spaceResponse.clientID);
+		if(url != null){
+			ClientResource cr = new ClientResource(url);
+			try {
+				cr.post(spaceResponse, MediaType.APPLICATION_JSON); //attempt to post response to client endpoint
+			}catch( ResourceException e){ //handle error if client endpoint not available
+				
+				Logger.getLogger("RSpace").log(Level.WARNING, "Connection not available with client endpoint, response not sent.");
+			}
+			cr.release();
 		}
-		cr.release();
 	}
 	
 }

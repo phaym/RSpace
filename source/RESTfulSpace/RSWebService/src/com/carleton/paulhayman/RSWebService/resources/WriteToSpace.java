@@ -25,7 +25,7 @@ public class WriteToSpace {
 		TransactionQueue.getInstance().addTransaction(writeTransaction);
 		
 		//return response
-		return Response.status(200).build();	
+		return Response.status(200).entity(entryToWrite.expiryDate).build();	
 	}
 	
 }
