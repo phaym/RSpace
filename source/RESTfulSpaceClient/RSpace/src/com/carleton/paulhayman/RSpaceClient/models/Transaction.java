@@ -2,8 +2,6 @@ package com.carleton.paulhayman.RSpaceClient.models;
 
 import javax.ws.rs.core.MediaType;
 
-import com.carleton.paulhayman.RSpaceClient.comm.SpaceEntry;
-import com.carleton.paulhayman.RSpaceClient.controller.RSpace;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 

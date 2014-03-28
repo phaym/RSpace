@@ -15,6 +15,7 @@ import com.carleton.paulhayman.RSpaceClient.models.ClientTransaction;
 import com.carleton.paulhayman.RSpaceClient.models.InstantTransaction;
 import com.carleton.paulhayman.RSpaceClient.models.ResponsiveTransaction;
 import com.carleton.paulhayman.RSpaceClient.resources.ResponseService;
+import com.carleton.paulhayman.RSpaceClient.services.ClientMonitor;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.sun.jersey.api.client.Client;
@@ -28,13 +29,17 @@ public class RSpace {
 	/*Server endpoint config*/
 	private WebResource restSpace;
 	private static String BASE_URL = "http://localhost:8080/RSWebService";
-	private static String REST = "RSpace";
-	private static String READ = "read";
-	private static String TAKE = "take";
-	private static String WRITE = "write";
-	private static String READIFEXISTS = "readIfExists";
-	private static String TAKEIFEXISTS = "takeIfExists";
-	private static String REGISTER_CLIENT = "registerClient";
+
+	/*server endpoints*/
+	protected static String REST = "RSpace";
+	protected static String READ = "read";
+	protected static String TAKE = "take";
+	protected static String WRITE = "write";
+	protected static String READIFEXISTS = "readIfExists";
+	protected static String TAKEIFEXISTS = "takeIfExists";
+	protected static String REGISTER_CLIENT = "registerClient";
+	protected static String RENEW_CLIENT = "renewClient";
+	
 	
 	/*client endpoint config*/
 	ResponseService responseService;
@@ -47,6 +52,7 @@ public class RSpace {
 	private static RSpace instance;
 	private ExecutorService responsePool;
 	public static String CLIENT_ID = "";
+	protected ClientMonitor clientMonitor;
 	
 	private RSpace(int port) throws Exception {
 		
@@ -79,6 +85,7 @@ public class RSpace {
 		try {
 			responseService.terminate();
 			responsePool.shutdownNow();
+			clientMonitor.terminate();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -121,14 +128,17 @@ public class RSpace {
 	}
 	
 	private void generateClientID() {
-		String result = createClientTransaction(RETURN_URL ,REST, REGISTER_CLIENT);
-		this.CLIENT_ID = result;
+		
+		ClientTransaction transaction = new ClientTransaction(restSpace.path(REST), REGISTER_CLIENT);
+		String result =  transaction.registerClient(RETURN_URL);
+		RSpace.CLIENT_ID = result;
+		createClientMonitor(CLIENT_ID, RETURN_URL);
 	}
 	
-	private String createClientTransaction(String returnURL, String restPath, String actionEndpoint) {
+	private void createClientMonitor(String clientID, String returnURL){
 		
-		ClientTransaction transaction = new ClientTransaction(returnURL, restSpace.path(restPath), actionEndpoint);
-		return  transaction.registerClient();
+		clientMonitor = new ClientMonitor(clientID, returnURL, restSpace.path(REST), RENEW_CLIENT);
+		clientMonitor.beginPolling();
 	}
 
 	/*write object to space, return timeout*/

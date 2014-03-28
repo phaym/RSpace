@@ -171,12 +171,32 @@ public class MongoDbImpl {
 		
 		return urlResult;
 	}
+
+	public boolean renewClient(Client clientInfo) {
+		boolean success = false;
+		
+		//create client URL and TTL fields
+		DBObject entryToUpdate = new BasicDBObject(CLIENT_ID_FIELD, new ObjectId(clientInfo.clientID));
+		
+		//update with new timeout
+		DBObject update= new BasicDBObject();
+		update.put(CLIENT_URL_FIELD, clientInfo.url);
+		update.put(TTL_FIELD, new Date(clientInfo.timeout));
+		
+		DBObject updatedEntry = db.getCollection(CLIENT_COLLECTION).findAndModify(entryToUpdate, update);
+		if(updatedEntry != null){
+			success = true;
+		}
+		
+		return success;
+	}
 	
 	public static MongoDbImpl getInstance(){
 		if(instance == null)
 			instance = new MongoDbImpl();
 		return instance;
 	}
+
 
 	
 
