@@ -59,6 +59,7 @@ public class ListenerWorker implements Runnable {
 		}
 		catch(IllegalStateException e){
 			System.out.println(" phase: " + this.phaserLock.getPhase() + " , parties : " + this.phaserLock.getArrivedParties());
+			e.printStackTrace();
 		}
 		ResponseQueue responseQueue = ResponseQueue.getInstance();
 		responseQueue.addResponse(this.transaction);	
