@@ -4,6 +4,7 @@ import java.util.concurrent.Phaser;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import com.carleton.paulhayman.RSWebService.dao.MongoDbImpl;
 import com.carleton.paulhayman.RSWebService.dao.ResponseQueue;
 import com.carleton.paulhayman.RSWebService.models.Transaction;
 
@@ -24,7 +25,8 @@ public class ListenerWorker implements Runnable {
 	@Override
 	public void run() {
 		
-		while(listening){
+		//don't perform transaction if the client is terminated
+		while(listening && MongoDbImpl.getInstance().getClientURL(transaction.getClientID()) != null){
 				
 			boolean foundMatch = transaction.perform();
 			

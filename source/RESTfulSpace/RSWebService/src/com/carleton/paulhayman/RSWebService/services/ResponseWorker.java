@@ -50,7 +50,7 @@ public class ResponseWorker implements Runnable {
 		t.start();
 	}
 
-	/*send response to client contained matched tuple, or null if none found*/
+	/*send response to client containing matched tuple, or don't do anything if client is expired*/
 	private void sendResponse(Transaction transWithResponse) {
 		
 		Response spaceResponse = transWithResponse.getResponse();

@@ -15,6 +15,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mongodb.BasicDBObject;
+import com.mongodb.DBCursor;
 import com.mongodb.MongoClient;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
@@ -34,6 +35,7 @@ public class MongoDbImpl {
 	private final String SUPER_CLASS_FIELD = "superClassName";
 	private final String TTL_FIELD = "expireAt";
 	private final String TUPLE_FIELD = "tupleEntry";
+	private final String CLIENT_FK_ID = "clientID";
 	
 	private final String CLIENT_COLLECTION = "Clients";
 	private final String CLIENT_URL_FIELD = "clientURL";
@@ -72,9 +74,10 @@ public class MongoDbImpl {
 		DBObject newEntry = new BasicDBObject();
 		newEntry.put(TUPLE_FIELD, JSON.parse(entry.getJSONSerializedTuple()));
 		newEntry.put(TTL_FIELD, new Date(entry.getExpiryDate()));
+		newEntry.put(CLIENT_FK_ID,  trans.getClientID());//put Id of client writing tuple, will be invalid when client expires or is terminated
 		//add classnames for finding subclass matches
 		newEntry.put(CLASS_FIELD,  entry.getClassName());
-		//don't use superclass if it is default Object
+		//don't use superclass if it is default Object type
 		if(!entry.getSuperClassName().equals( Object.class.getCanonicalName())){
 			newEntry.put(SUPER_CLASS_FIELD, entry.getSuperClassName());
 		}
@@ -87,15 +90,22 @@ public class MongoDbImpl {
 		
 		boolean foundMatch = false;
 		SpaceEntry entry = trans.getTupleEntry();
-		
 		BasicDBObject query = buildQuery(entry); //create query
-		//remove if we are doing a take, or else just read
 		DBCollection coll = db.getCollection(ENTRY_COLLECTION); //get collection of objects of this type
-		DBObject result = (removeResult) ? coll.findAndRemove(query) : coll.findOne(query);
 		
-		//if we found a result, return true and set the resulting tuple
+		/*find all matches and only take match where client is not expired*/
+		DBCursor iterator = coll.find(query);
+		DBObject result = null;
+		while(iterator.hasNext() && foundMatch == false){
+			DBObject currentMatch = iterator.next();	
+			if(getClientURL((String) currentMatch.get(CLIENT_FK_ID)) != null){ //if client id not expired for tuple
+				foundMatch = true;
+				//remove if we are doing a take, or else just read
+				result = (removeResult) ? coll.findAndRemove(currentMatch) : coll.findOne(currentMatch);
+			}
+		}
+		//if we found a result set the resulting tuple for the transaction
 		if(result != null){
-			foundMatch = true;
 			trans.setTupleResult(JSON.serialize(result.get(TUPLE_FIELD)), (String) result.get(CLASS_FIELD));
 		}
 	
