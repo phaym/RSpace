@@ -42,7 +42,7 @@ public class ResponsiveTransaction extends Transaction implements Callable<Objec
 		/*call web service and handle response*/
 		ClientResponse response = callWebService(this.spaceEntry);
 		this.transId = (int) response.getEntity(Integer.class);
-		
+		response.close();
 		/*wait for web service to provide tuple Object result*/
 		awaitResult();
 		

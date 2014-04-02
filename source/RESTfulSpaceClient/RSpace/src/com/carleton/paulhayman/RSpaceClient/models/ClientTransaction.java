@@ -18,8 +18,10 @@ public class ClientTransaction extends Transaction {
 		//create an entry to be sent to endpoint
 		Client clientEntry = new Client("",returnURL, expiryDate);
 		ClientResponse response = callWebService(clientEntry);
+		String clientID = response.getEntity(String.class);
+		response.close();
 		
-		return response.getEntity(String.class);
+		return clientID;
 	}
 
 }

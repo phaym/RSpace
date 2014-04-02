@@ -30,7 +30,7 @@ public class InstantTransaction extends Transaction {
 		if( response.getStatus() == 200){
 			successful = true;
 		}
-		
+		response.close();
 		return successful;
 	}
 

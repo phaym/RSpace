@@ -12,13 +12,11 @@ public class ResponseService {
 
 	
 	public ResponseService(int port) {
-		component = new Component();
-		
+	
+		component = new Component();		
 		component.getServers().add(Protocol.HTTP, port);
-		
 		component.getDefaultHost().attach(RSpace.RETURN_ROUTER, 
 				new ResponseRouter());
-		
 	}
 	
 	public void init() throws Exception{
