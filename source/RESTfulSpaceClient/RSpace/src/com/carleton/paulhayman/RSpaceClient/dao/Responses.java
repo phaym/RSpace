@@ -29,11 +29,11 @@ public class Responses {
 	/*call from client endpoint which will provide the waiting thread with its result, allowing it to continue*/
 	public void updateWaitList(Response response){
 		
-		ResponsiveTransaction waitingTransaction = awaitingResults.get(response.transId);
+		ResponsiveTransaction waitingTransaction = awaitingResults.get(response.getTransId());
 		
 		if(waitingTransaction != null){
 			waitingTransaction.provideTupleResult(response);
-			awaitingResults.remove(response.transId);
+			awaitingResults.remove(response.getTransId());
 		}		
 		else{
 			Logger.getLogger("RSpace").log(Level.WARNING, "Received response at current port for unknown transaction, previous client using this port may have terminated before response received.");

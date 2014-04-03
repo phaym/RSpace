@@ -3,12 +3,28 @@ package com.carleton.paulhayman.RSpaceClient.comm;
 
 public class Response {
 	
-	public int transId;
-	public String clientID;
-	public String serializedTuple;
-	public String className;
+	private int transId;
+	private String clientID;
+	private String serializedTuple;
+	private String className;
 	
 	public Response(){
+	}
+
+	public int getTransId() {
+		return transId;
+	}
+
+	public String getClientID() {
+		return clientID;
+	}
+
+	public String getSerializedTuple() {
+		return serializedTuple;
+	}
+
+	public String getClassName() {
+		return className;
 	}
 	
 }

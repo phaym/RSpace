@@ -40,7 +40,6 @@ public class RSpace {
 	protected static String REGISTER_CLIENT = "registerClient";
 	protected static String RENEW_CLIENT = "renewClient";
 	
-	
 	/*client endpoint config*/
 	ResponseService responseService;
 	public static String RETURN_URL = "";
@@ -102,29 +101,40 @@ public class RSpace {
 	/*send tuple framework to WebService, returns matching tuple Object*/
 	public Object read(Object tuple, long timeout){		
 		 
-		Response tupleResult = createResponsiveTransaction(tuple, timeout, REST, READ);
+		ResponsiveTransaction trans = new ResponsiveTransaction(tuple, timeout, restSpace.path(REST), READ);
+		Response tupleResult = submitResponsiveTransaction(trans);
 		return handleResult(tupleResult);
 	}
 	
 	/*send tuple framework to WebService, returns matching tuple Object*/
 	public Object take(Object tuple, long timeout){		
-		 
-		Response tupleResult = createResponsiveTransaction(tuple, timeout, REST, TAKE);
+		
+		ResponsiveTransaction trans = new ResponsiveTransaction(tuple, timeout, restSpace.path(REST), TAKE);
+		Response tupleResult = submitResponsiveTransaction(trans);
 		return handleResult(tupleResult);
 	}
 	
 	/*send tuple framework to WebService, returns matching tuple Object*/
 	public Object readIfExists(Object tuple){		
-		 
-		Response tupleResult = createResponsiveTransaction(tuple, 0, REST, READIFEXISTS);
+		
+		ResponsiveTransaction trans = new ResponsiveTransaction(tuple, 0, restSpace.path(REST), READIFEXISTS);
+		Response tupleResult = submitResponsiveTransaction(trans);
 		return handleResult(tupleResult);
 	}
 
 	/*send tuple framework to WebService, returns matching tuple Object*/
 	public Object takeIfExists(Object tuple){		
-		 
-		Response tupleResult = createResponsiveTransaction(tuple, 0, REST, TAKEIFEXISTS);
+		
+		ResponsiveTransaction trans = new ResponsiveTransaction(tuple, 0, restSpace.path(REST), TAKEIFEXISTS);	
+		Response tupleResult = submitResponsiveTransaction(trans);
 		return handleResult(tupleResult);
+	}
+	
+	/*write object to space, return timeout*/
+	public Object write(Object tuple, long timeout){
+		
+	    createInstantTransaction(tuple, timeout, REST, WRITE);
+		return timeout;
 	}
 	
 	private void generateClientID() {
@@ -140,13 +150,6 @@ public class RSpace {
 		clientMonitor = new ClientMonitor(clientID, returnURL, restSpace.path(REST), RENEW_CLIENT);
 		clientMonitor.beginPolling();
 	}
-
-	/*write object to space, return timeout*/
-	public Object write(Object tuple, long timeout){
-		
-	    createInstantTransaction(tuple, timeout, REST, WRITE);
-		return timeout;
-	}
 	
 	/*create a transaction that does not wait for a later response from the server */
 	private Object createInstantTransaction(Object tuple, long timeout, String restPath, String actionEndpoint) {
@@ -157,9 +160,9 @@ public class RSpace {
 	
 	/*create a transaction that will get a transaction ID from the server and wait for
 	 the server to send a matching tuple response to the RESTful client endpoint for that transaction */
-	private Response createResponsiveTransaction(Object tuple, long timeout, String restPath, String actionEndpoint){
+	private Response submitResponsiveTransaction(ResponsiveTransaction transaction){
 		
-		Callable<Object> futureTrans = new ResponsiveTransaction(tuple, timeout, restSpace.path(restPath), actionEndpoint);	
+		Callable<Object> futureTrans = transaction;	
 		Future<Object> spaceTask = this.responsePool.submit(futureTrans);
 		
 		//get result as serialized json, or null if no match
@@ -175,15 +178,16 @@ public class RSpace {
 	
 	private Object handleResult(Response tupleResult) {
 		Object result = null;
-		if(tupleResult != null && tupleResult.serializedTuple != null){
+		if(tupleResult != null && tupleResult.getSerializedTuple() != null){
 			try {
-				result = new Gson().fromJson(tupleResult.serializedTuple, Class.forName(tupleResult.className));
+				result = new Gson().fromJson(tupleResult.getSerializedTuple(), Class.forName(tupleResult.getClassName()));
 			} catch (JsonSyntaxException | ClassNotFoundException e ) {
 					e.printStackTrace();
 			}
 		}
 		return result;
 	}
+	
 	public static URI getBaseURI(){ 
 		return UriBuilder.fromUri(BASE_URL).build();
 	}

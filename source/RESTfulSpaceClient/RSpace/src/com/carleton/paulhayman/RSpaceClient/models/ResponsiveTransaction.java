@@ -15,8 +15,8 @@ import com.carleton.paulhayman.RSpaceClient.dao.Responses;
 public class ResponsiveTransaction extends Transaction implements Callable<Object> {
 
 	protected SpaceEntry spaceEntry = null;
-	private Response result;
-	private CountDownLatch latch;
+	protected Response result;
+	protected CountDownLatch latch;
 	
 	/*a transaction with the RSpace that will provide to client TupleResponse endpoint
 	 * the TupleObject result of an action when it is available.
@@ -51,7 +51,7 @@ public class ResponsiveTransaction extends Transaction implements Callable<Objec
 	}
 	
 	/*wait for result provided by Responses class*/
-	private void awaitResult(){	
+	protected void awaitResult(){	
 		try {
 			/*place thread/tuple identifier in waitlist for future responses from web service*/
 			Responses.getInstance().addToWaitList(this.transId, this);
