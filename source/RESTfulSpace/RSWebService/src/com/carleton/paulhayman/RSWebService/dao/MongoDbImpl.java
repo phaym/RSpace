@@ -215,9 +215,5 @@ public class MongoDbImpl {
 			instance = new MongoDbImpl();
 		return instance;
 	}
-
-
-	
-
 	
 }
