@@ -1,8 +1,10 @@
 package com.carleton.paulhayman.RSWebService.dao;
 
+import java.lang.reflect.Type;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -11,9 +13,8 @@ import org.bson.types.ObjectId;
 import com.carleton.paulhayman.RSWebService.comm.Client;
 import com.carleton.paulhayman.RSWebService.comm.SpaceEntry;
 import com.carleton.paulhayman.RSWebService.models.Transaction;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.DB;
@@ -122,18 +123,19 @@ public class MongoDbImpl {
 		classCheck.add(new BasicDBObject(SUPER_CLASS_FIELD, entry.getClassName()));
 		query.put("$or", classCheck);
 		
-		JsonObject tupleToFind = (JsonObject) new JsonParser().parse(entry.getJSONSerializedTuple());
+		Type stringObjectMap = new TypeToken<HashMap<String, Object>>(){}.getType();
+		HashMap<String, Object> tupleToFind = new Gson().fromJson(entry.getJSONSerializedTuple(), stringObjectMap);
 		//iterate through fields of tuple template and add them to our query
-		for (Entry<String, JsonElement> tupleField : tupleToFind.entrySet()) {
+		for (Entry<String, Object> tupleField : tupleToFind.entrySet()) {
 			
 			String fieldKey = TUPLE_FIELD + "." + tupleField.getKey();
 			BasicDBObject wildCard =  new BasicDBObject("$exists",true);
 			
-			if(tupleField.getValue().isJsonNull()){ 
+			if(tupleField.getValue() == null){ 
 				query.put(fieldKey , wildCard);  //if null set wildcard value
 			}
 			else {
-				query.put(fieldKey , entry.getFields().get(tupleField.getKey()));
+				query.put(fieldKey , tupleField.getValue());
 			}
 		}
 		

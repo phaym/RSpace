@@ -99,33 +99,33 @@ public class RSpace {
 	}
 
 	/*send tuple framework to WebService, returns matching tuple Object*/
-	public Object read(Object tuple, long timeout){		
+	public Object read(Object template, long timeout){		
 		 
-		ResponsiveTransaction trans = new ResponsiveTransaction(tuple, timeout, restSpace.path(REST), READ);
+		ResponsiveTransaction trans = new ResponsiveTransaction(template, timeout, restSpace.path(REST), READ);
 		Response tupleResult = submitResponsiveTransaction(trans);
 		return handleResult(tupleResult);
 	}
 	
 	/*send tuple framework to WebService, returns matching tuple Object*/
-	public Object take(Object tuple, long timeout){		
+	public Object take(Object template, long timeout){		
 		
-		ResponsiveTransaction trans = new ResponsiveTransaction(tuple, timeout, restSpace.path(REST), TAKE);
+		ResponsiveTransaction trans = new ResponsiveTransaction(template, timeout, restSpace.path(REST), TAKE);
 		Response tupleResult = submitResponsiveTransaction(trans);
 		return handleResult(tupleResult);
 	}
 	
 	/*send tuple framework to WebService, returns matching tuple Object*/
-	public Object readIfExists(Object tuple){		
+	public Object readIfExists(Object template){		
 		
-		ResponsiveTransaction trans = new ResponsiveTransaction(tuple, 0, restSpace.path(REST), READIFEXISTS);
+		ResponsiveTransaction trans = new ResponsiveTransaction(template, 0, restSpace.path(REST), READIFEXISTS);
 		Response tupleResult = submitResponsiveTransaction(trans);
 		return handleResult(tupleResult);
 	}
 
 	/*send tuple framework to WebService, returns matching tuple Object*/
-	public Object takeIfExists(Object tuple){		
+	public Object takeIfExists(Object template){		
 		
-		ResponsiveTransaction trans = new ResponsiveTransaction(tuple, 0, restSpace.path(REST), TAKEIFEXISTS);	
+		ResponsiveTransaction trans = new ResponsiveTransaction(template, 0, restSpace.path(REST), TAKEIFEXISTS);	
 		Response tupleResult = submitResponsiveTransaction(trans);
 		return handleResult(tupleResult);
 	}

@@ -1,8 +1,5 @@
 package com.carleton.paulhayman.RSWebService.comm;
 
-import java.util.HashMap;
-
-
 public class SpaceEntry {
 
 	public TupleObject tuple;
@@ -19,10 +16,6 @@ public class SpaceEntry {
 
 	public String getJSONSerializedTuple() {
 		return tuple.serializedTuple;
-	}
-
-	public HashMap<String, Object> getFields() {
-		return tuple.fields;
 	}
 
 	public long getExpiryDate() {
