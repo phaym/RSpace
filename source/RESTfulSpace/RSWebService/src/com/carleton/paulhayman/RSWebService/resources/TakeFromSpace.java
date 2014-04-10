@@ -21,7 +21,7 @@ public class TakeFromSpace {
 		
 		//create transaction and add to queue
 		final int entryTransId = System.identityHashCode(entryToRead);
-		TakeTransaction takeTransaction = new TakeTransaction(entryToRead, entryTransId, false);
+		TakeTransaction takeTransaction = new TakeTransaction(entryToRead, entryTransId);
 		TransactionQueue.getInstance().addTransaction(takeTransaction);
 		
 		//return response with transaction ID for reference

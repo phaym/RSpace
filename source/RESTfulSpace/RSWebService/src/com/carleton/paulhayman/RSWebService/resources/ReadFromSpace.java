@@ -21,7 +21,7 @@ public class ReadFromSpace {
 		
 		//create transaction and add to queue
 		final int entryTransId = System.identityHashCode(entryToRead);
-		ReadTransaction readTransaction = new ReadTransaction(entryToRead, entryTransId, false);
+		ReadTransaction readTransaction = new ReadTransaction(entryToRead, entryTransId);
 		TransactionQueue.getInstance().addTransaction(readTransaction);
 		
 		//return response with transaction ID for reference

@@ -39,11 +39,11 @@ public class TransactionWorker implements Runnable {
 	protected void processTransaction(final Transaction newTransaction){
 		Thread t = new Thread() {
 		    public void run() {
-				boolean noFurtherAction;
+				boolean success;
 				//if there is further action, it will be added to listener queue
-				noFurtherAction = newTransaction.perform();
+				success = newTransaction.perform();
 				
-				if(noFurtherAction || newTransaction.isExpired()){
+				if(success || newTransaction.isExpired()){
 					addToResponseQueue(newTransaction);
 				}
 				else{
@@ -58,16 +58,14 @@ public class TransactionWorker implements Runnable {
 	protected void addToResponseQueue(Transaction t){
 		
 		if(!(t instanceof WriteTransaction)){ //do nothing if a writetransaction enters this block
-			ResponseQueue responseQueue = ResponseQueue.getInstance();
-			responseQueue.addResponse(t);
+		   ResponseQueue.getInstance().addResponse(t);
 		}
 	}
 	
 	//add to queue to wait for possible later response
 	protected void addToListenerQueue(Transaction t){
 	
-		ListenerQueue futureQueue = ListenerQueue.getInstance();
-		futureQueue.addTransaction(t);
+		ListenerQueue.getInstance().addTransaction(t);
 	}
 
 	

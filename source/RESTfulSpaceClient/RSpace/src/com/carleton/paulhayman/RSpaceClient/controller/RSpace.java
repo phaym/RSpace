@@ -35,8 +35,6 @@ public class RSpace {
 	protected static String READ = "read";
 	protected static String TAKE = "take";
 	protected static String WRITE = "write";
-	protected static String READIFEXISTS = "readIfExists";
-	protected static String TAKEIFEXISTS = "takeIfExists";
 	protected static String REGISTER_CLIENT = "registerClient";
 	protected static String RENEW_CLIENT = "renewClient";
 	
@@ -117,7 +115,7 @@ public class RSpace {
 	/*send tuple framework to WebService, returns matching tuple Object*/
 	public Object readIfExists(Object template){		
 		
-		ResponsiveTransaction trans = new ResponsiveTransaction(template, 0, restSpace.path(REST), READIFEXISTS);
+		ResponsiveTransaction trans = new ResponsiveTransaction(template, 0, restSpace.path(REST), READ);
 		Response tupleResult = submitResponsiveTransaction(trans);
 		return handleResult(tupleResult);
 	}
@@ -125,7 +123,7 @@ public class RSpace {
 	/*send tuple framework to WebService, returns matching tuple Object*/
 	public Object takeIfExists(Object template){		
 		
-		ResponsiveTransaction trans = new ResponsiveTransaction(template, 0, restSpace.path(REST), TAKEIFEXISTS);	
+		ResponsiveTransaction trans = new ResponsiveTransaction(template, 0, restSpace.path(REST), TAKE);	
 		Response tupleResult = submitResponsiveTransaction(trans);
 		return handleResult(tupleResult);
 	}

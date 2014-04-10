@@ -5,12 +5,8 @@ import com.carleton.paulhayman.RSWebService.dao.MongoDbImpl;
 
 public class TakeTransaction extends FindMatchTransaction {
 	
-	boolean takeIfExists;
-	
-	public TakeTransaction(SpaceEntry tupleEntry, int transId, boolean takeIfExists) {
+	public TakeTransaction(SpaceEntry tupleEntry, int transId) {
 		super(tupleEntry, transId);
-		
-		this.takeIfExists = takeIfExists;
 	}
 
 
@@ -19,7 +15,7 @@ public class TakeTransaction extends FindMatchTransaction {
 		
 		//will return true if it is to be placed in response queue
 		boolean foundMatch = MongoDbImpl.getInstance().findTupleMatch(this, true);
-		return (foundMatch || takeIfExists); //if takeIfExists true, send whether we found result or not
+		return foundMatch; 
 	}
 
 
