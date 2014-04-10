@@ -18,6 +18,9 @@ public abstract class Transaction {
 		this.tupleResponse = new Response(this.transId);
 	}
 	
+	//perform necessary task on database
+	public abstract boolean perform();
+	
 	public SpaceEntry getTupleEntry() {
 		return tupleEntry;
 	}
@@ -33,9 +36,6 @@ public abstract class Transaction {
 	public long getMillisToTimeout(){
 		return tupleEntry.expiryDate - System.currentTimeMillis();
 	}
-
-	//perform necessary task on database
-	public abstract boolean perform();
 
 	public void setTupleResult(String serializedTuple, String tupleClassName) {
 		this.tupleResponse.setResult(serializedTuple, tupleClassName);

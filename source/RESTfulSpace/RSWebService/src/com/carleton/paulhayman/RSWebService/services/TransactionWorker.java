@@ -5,7 +5,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import com.carleton.paulhayman.RSWebService.dao.ListenerQueue;
 import com.carleton.paulhayman.RSWebService.dao.ResponseQueue;
 import com.carleton.paulhayman.RSWebService.models.Transaction;
-import com.carleton.paulhayman.RSWebService.models.WriteTransaction;
 
 public class TransactionWorker implements Runnable {
 
@@ -39,11 +38,11 @@ public class TransactionWorker implements Runnable {
 	protected void processTransaction(final Transaction newTransaction){
 		Thread t = new Thread() {
 		    public void run() {
-				boolean success;
-				//if there is further action, it will be added to listener queue
-				success = newTransaction.perform();
+				boolean sendResponse;
+				//if match is found send response, if no match found or it is a write add to listener
+				sendResponse = newTransaction.perform();
 				
-				if(success || newTransaction.isExpired()){
+				if(sendResponse || newTransaction.isExpired()){
 					addToResponseQueue(newTransaction);
 				}
 				else{
@@ -57,9 +56,7 @@ public class TransactionWorker implements Runnable {
 	//add to response queue
 	protected void addToResponseQueue(Transaction t){
 		
-		if(!(t instanceof WriteTransaction)){ //do nothing if a writetransaction enters this block
-		   ResponseQueue.getInstance().addResponse(t);
-		}
+		ResponseQueue.getInstance().addResponse(t);
 	}
 	
 	//add to queue to wait for possible later response

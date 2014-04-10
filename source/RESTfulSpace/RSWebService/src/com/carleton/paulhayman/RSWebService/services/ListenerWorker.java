@@ -26,7 +26,7 @@ public class ListenerWorker implements Runnable {
 	public void run() {
 		
 		//don't perform transaction if the client is terminated
-		while(listening && MongoDbImpl.getInstance().getClientURL(transaction.getClientID()) != null){
+		while(listening && clientActive()){
 				
 			boolean foundMatch = transaction.perform();
 			
@@ -48,11 +48,18 @@ public class ListenerWorker implements Runnable {
 				}
 			}	
 		}
+		deregisterFromLock();
 	}
 
 	//discontinue loop, deregister from barrier and add to response queue
 	public void addToResponseQueue() {
 	
+		deregisterFromLock();
+		ResponseQueue responseQueue = ResponseQueue.getInstance();
+		responseQueue.addResponse(this.transaction);	
+	}
+	
+	private void deregisterFromLock(){
 		listening = false;
 		try{
 			phaserLock.arriveAndDeregister();
@@ -61,8 +68,10 @@ public class ListenerWorker implements Runnable {
 			System.out.println(" phase: " + this.phaserLock.getPhase() + " , parties : " + this.phaserLock.getArrivedParties());
 			e.printStackTrace();
 		}
-		ResponseQueue responseQueue = ResponseQueue.getInstance();
-		responseQueue.addResponse(this.transaction);	
+	}
+	
+	private boolean clientActive(){
+		return MongoDbImpl.getInstance().getClientURL(transaction.getClientID()) != null;
 	}
 
 }

@@ -14,18 +14,11 @@ public  class FindMatchTransaction extends Transaction {
 		this.removeResult = removeResult;
 	}
 	
-	public boolean findMatch() {
-		
-		//will return true if it is to be placed in response queue
-		boolean foundResult = MongoDbImpl.getInstance().findTupleMatch(this, removeResult);
-		return foundResult;// if readIfExists true, send whether we found result or not
-	}
-	
 	@Override
 	public boolean perform() {
 		
 		/*search database for object with matching fields*/
-		boolean success = findMatch(); 
+		boolean success = MongoDbImpl.getInstance().findTupleMatch(this, removeResult);
 		return success;
 	}
 	

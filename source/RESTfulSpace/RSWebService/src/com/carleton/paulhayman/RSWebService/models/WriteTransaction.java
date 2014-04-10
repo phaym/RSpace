@@ -12,10 +12,8 @@ public class WriteTransaction extends Transaction {
 
 	@Override
 	public boolean perform() {
-		
-		boolean noFurtherAction = false;
+	
 		MongoDbImpl.getInstance().writeTupleToDB(this);
-		return noFurtherAction;
+		return false; //return false to notify listener queue
 	}
-
 }
