@@ -9,7 +9,7 @@ import javax.ws.rs.core.Response;
 
 import com.carleton.paulhayman.RSWebService.comm.SpaceEntry;
 import com.carleton.paulhayman.RSWebService.dao.TransactionQueue;
-import com.carleton.paulhayman.RSWebService.models.TakeTransaction;
+import com.carleton.paulhayman.RSWebService.models.FindMatchTransaction;
 
 @Path("take")
 public class TakeFromSpace {
@@ -21,7 +21,7 @@ public class TakeFromSpace {
 		
 		//create transaction and add to queue
 		final int entryTransId = System.identityHashCode(entryToRead);
-		TakeTransaction takeTransaction = new TakeTransaction(entryToRead, entryTransId);
+		FindMatchTransaction takeTransaction = new FindMatchTransaction(entryToRead, entryTransId, true);
 		TransactionQueue.getInstance().addTransaction(takeTransaction);
 		
 		//return response with transaction ID for reference
