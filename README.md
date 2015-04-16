@@ -1,5 +1,8 @@
 RSpace
 ======
+
+![Alt text](/RSpace-image.png?raw=true "RSpace")
+
 RSpace is a lightweight and flexible implementation of a tuple space using RESTful web services.
 
 Existing implementations of a tuple space such as Javaspaces have many limitations. Javaspaces can only be accessed with Java and relies on Jini making it complex, slow and difficult to deploy. This project was created to eliminate the need for Jini and the use of Java to make a simpler implementation of a tuple space that is more practical for use in a distributed system. 
